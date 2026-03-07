@@ -1,0 +1,532 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #f0efed;
+  --text: #1a1a1a;
+  --text-light: #555;
+  --border: #c0bebb;
+  --font-display: 'Montserrat', sans-serif;
+  --font-body: 'Montserrat', sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+/* ─── NAV ─── */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg);
+  padding: 28px 60px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s;
+}
+
+nav.scrolled {
+  border-color: var(--border);
+}
+
+nav a {
+  text-decoration: none;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 14px 28px;
+  border: 1px solid var(--text);
+  transition: background 0.2s, color 0.2s;
+}
+
+nav a:hover,
+nav a.active {
+  background: var(--text);
+  color: var(--bg);
+}
+
+/* ─── SECTIONS ─── */
+section {
+  padding: 80px 120px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ─── HERO / O MNIE ─── */
+#o-mnie {
+  padding-top: 60px;
+  padding-bottom: 80px;
+}
+
+.hero-name {
+  font-family: var(--font-display);
+  font-size: 42px;
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.hero-name strong {
+  font-weight: 700;
+}
+
+.hero-divider {
+  width: 220px;
+  height: 1px;
+  background: var(--text);
+  margin-bottom: 0;
+}
+
+.hero-subtitle {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-light);
+  text-align: right;
+  margin-bottom: 60px;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: start;
+}
+
+.hero-photo {
+  width: 100%;
+  aspect-ratio: 3/4;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+}
+
+.hero-photo-placeholder {
+  width: 100%;
+  aspect-ratio: 3/4;
+  background: linear-gradient(135deg, #d8d5d0 0%, #c8c4be 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+}
+
+.o-mnie-content h2 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+.o-mnie-content p {
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.8;
+  margin-bottom: 20px;
+}
+
+/* ─── SECTION HEADINGS z animowaną linią ─── */
+.section-heading {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  margin-bottom: 50px;
+  overflow: hidden; /* clip the line during animation */
+}
+
+.section-heading h2 {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+  /* fade-in from left */
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.section-heading h2 strong {
+  font-weight: 700;
+}
+
+.section-heading-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+  /* grow from zero width */
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* When section is in view, trigger animations */
+.section-heading.in-view h2 {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.section-heading.in-view .section-heading-line {
+  transform: scaleX(1);
+}
+
+/* Slight delay for the line vs the heading */
+.section-heading.in-view h2 { transition-delay: 0s; }
+.section-heading.in-view .section-heading-line { transition-delay: 0.2s; }
+
+/* ─── OBSZARY POMOCY ─── */
+.obszary-list {
+  list-style: none;
+  padding: 0;
+}
+
+.obszary-list li {
+  font-size: 14px;
+  line-height: 1.9;
+  color: var(--text);
+  padding-left: 16px;
+  position: relative;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.obszary-list li.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── FORMY PRACY ─── */
+.formy-grid {
+  display: flex;
+  flex-direction: column;
+}
+
+.forma-item {
+  padding: 40px 0;
+  border-bottom: 1px solid var(--border);
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.forma-item.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.forma-item:first-child {
+  border-top: 1px solid var(--border);
+}
+
+.forma-item h3 {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.forma-item h3 strong {
+  font-weight: 700;
+}
+
+.forma-title {
+  white-space: nowrap;
+}
+
+.toggle-icon {
+  font-size: 18px;
+  font-weight: 300;
+  transition: transform 0.3s;
+  flex-shrink: 0;
+  margin-left: 20px;
+}
+
+.forma-item h3.open .toggle-icon {
+  transform: rotate(180deg);
+}
+
+.forma-body {
+  max-width: 560px;
+}
+
+.forma-body p {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text);
+  margin-bottom: 14px;
+}
+
+.wiecej {
+  display: inline-block;
+  font-size: 12px;
+  color: var(--text-light);
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: var(--font-body);
+  letter-spacing: 0.06em;
+  padding: 0;
+  margin-top: 4px;
+}
+
+.extra-content {
+  display: none;
+  margin-top: 12px;
+}
+
+.extra-content.open {
+  display: block;
+}
+
+/* ─── ZASADY WSPÓŁPRACY ─── */
+.zasady-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 40px 80px;
+}
+
+.zasada-item {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.zasada-item.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.zasada-item h4 {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.zasada-item p {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text);
+}
+
+/* ─── KONTAKT ─── */
+.kontakt-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: start;
+}
+
+.kontakt-info p {
+  font-size: 14px;
+  line-height: 1.9;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.kontakt-info a {
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.kontakt-info .label {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-top: 28px;
+  margin-bottom: 6px;
+  color: var(--text-light);
+}
+
+.kontakt-info .label:first-child {
+  margin-top: 0;
+}
+
+.kontakt-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.kontakt-form input,
+.kontakt-form textarea {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  padding: 10px 0;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--text);
+  outline: none;
+  width: 100%;
+  transition: border-color 0.2s;
+}
+
+.kontakt-form input::placeholder,
+.kontakt-form textarea::placeholder {
+  color: #aaa;
+  letter-spacing: 0.04em;
+}
+
+.kontakt-form input:focus,
+.kontakt-form textarea:focus {
+  border-color: var(--text);
+}
+
+.kontakt-form textarea {
+  resize: none;
+  height: 100px;
+}
+
+.kontakt-form button {
+  align-self: flex-start;
+  margin-top: 10px;
+  padding: 12px 40px;
+  background: transparent;
+  border: 1px solid var(--text);
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.kontakt-form button:hover {
+  background: var(--text);
+  color: var(--bg);
+}
+
+#form-status {
+  font-size: 13px;
+  margin-top: 8px;
+  display: none;
+}
+
+/* ─── MAPA ─── */
+.mapa-wrapper {
+  margin-top: 60px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+/* ─── FOOTER ─── */
+footer {
+  text-align: center;
+  padding: 30px 40px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--text-light);
+  text-transform: uppercase;
+}
+
+/* ─── BACK TO TOP ─── */
+.back-top {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 40px;
+  height: 40px;
+  background: var(--text);
+  color: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 200;
+  user-select: none;
+}
+
+.back-top.visible {
+  opacity: 1;
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 900px) {
+  section {
+    padding: 60px 40px;
+  }
+
+  .hero-grid,
+  .kontakt-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .zasady-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  nav {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 16px 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  section {
+    padding: 50px 20px;
+  }
+
+  .hero-name {
+    font-size: 28px;
+  }
+
+  nav a {
+    font-size: 10px;
+    padding: 10px 14px;
+  }
+
+  .forma-title {
+    white-space: normal;
+  }
+}
