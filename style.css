@@ -1,4 +1,56 @@
-*, *::before, *::after {
+/* Usunięcie domyślnych kolorów dla linków (mail, tel) */
+a[href^="mailto:"],
+a[href^="tel:"],
+.kontakt-info a {
+  color: inherit; /* Przyjmuje kolor tekstu rodzica */
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.kontakt-info a:hover {
+  opacity: 0.7;
+}
+
+/* Usunięcie niebieskiej poświaty przy kliknięciu na mobile */
+input,
+textarea,
+button,
+select,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Precyzyjne uderzenie w linki kontaktowe */
+#kontakt a,
+a[href^="mailto:"],
+a[href^="tel:"] {
+  color: var(
+    --text
+  ) !important; /* !important daje pewność, że nadpiszemy systemowe style */
+  text-decoration: none !important;
+  outline: none;
+}
+
+/* Styl dla najechania - opcjonalnie lekkie zszarzenie zamiast zmiany koloru */
+#kontakt a:hover {
+  opacity: 0.7;
+  color: var(--text) !important;
+}
+
+/* To naprawia problem na Safari, które dodaje własne style dla "visited" */
+#kontakt a:visited {
+  color: var(--text) !important;
+}
+
+/* Reset dla przycisku w stanie focus (żeby nie było niebieskiej ramki) */
+.kontakt-form button:focus {
+  outline: none;
+}
+
+/* ─── RESET I ZMIENNE ─── */
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -9,8 +61,8 @@
   --text: #1a1a1a;
   --text-light: #555;
   --border: #c0bebb;
-  --font-display: 'Montserrat', sans-serif;
-  --font-body: 'Montserrat', sans-serif;
+  --font-display: "Montserrat", sans-serif;
+  --font-body: "Montserrat", sans-serif;
 }
 
 html {
@@ -24,24 +76,30 @@ body {
   font-weight: 300;
   font-size: 15px;
   line-height: 1.7;
+  overflow-x: hidden;
 }
 
-/* ─── NAV ─── */
+/* ─── NAV – DOPRACOWANE MENU ─── */
 nav {
   position: sticky;
   top: 0;
   z-index: 100;
   background: var(--bg);
-  padding: 28px 60px;
+  padding: 28px 60px; /* Bazowy padding desktop */
   display: flex;
-  justify-content: flex-end;
-  gap: 14px;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.3s;
+  flex-wrap: wrap; /* Pozwala na dynamiczne rzędy */
+  justify-content: flex-end; /* ZAWSZE równaj do prawej */
+  gap: 10px;
+  /* border-bottom: 1px solid transparent; */
+  transition:
+    padding 0.3s ease,
+    border-color 0.3s ease;
 }
 
+/* Stan po przewinięciu */
 nav.scrolled {
   border-color: var(--border);
+  padding: 15px 60px; /* Zmniejszamy tylko wysokość, boki zostają 60px */
 }
 
 nav a {
@@ -50,11 +108,13 @@ nav a {
   font-family: var(--font-display);
   font-size: 11px;
   font-weight: 500;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  padding: 14px 28px;
+  padding: 10px 22px;
   border: 1px solid var(--text);
-  transition: background 0.2s, color 0.2s;
+  text-align: center; /* Tekst wyśrodkowany wewnątrz kafelka */
+  white-space: nowrap;
+  transition: all 0.2s ease;
 }
 
 nav a:hover,
@@ -63,6 +123,41 @@ nav a.active {
   color: var(--bg);
 }
 
+/* ─── RESPONSIVE (DOPASOWANIE DO TELEFONU) ─── */
+@media (max-width: 900px) {
+  nav {
+    padding: 15px 20px; /* Na mobile mniejszy padding boczny */
+    gap: 8px;
+    /* justify-content: flex-end zostaje, więc dąży do prawej */
+  }
+
+  /* KLUCZOWE: Naprawa skoku na mobile przy przewijaniu */
+  nav.scrolled {
+    padding: 10px 20px; /* Tutaj boki MUSZĄ być takie same jak wyżej (20px) */
+  }
+
+  nav a {
+    padding: 10px 16px;
+    font-size: 10px;
+    border-color: var(--border);
+  }
+}
+
+@media (max-width: 480px) {
+  nav {
+    padding: 12px 15px;
+    gap: 6px;
+  }
+
+  nav.scrolled {
+    padding: 8px 15px; /* Utrzymujemy 15px bocznego odstępu */
+  }
+
+  nav a {
+    padding: 8px 12px;
+    font-size: 9px;
+  }
+}
 /* ─── SECTIONS ─── */
 section {
   padding: 80px 120px;
@@ -70,10 +165,10 @@ section {
   margin: 0 auto;
 }
 
-/* ─── HERO / O MNIE ─── */
-#o-mnie {
+/* ─── HERO / NAGŁÓWEK ─── */
+#o-mnie-header {
   padding-top: 60px;
-  padding-bottom: 80px;
+  padding-bottom: 20px;
 }
 
 .hero-name {
@@ -90,10 +185,19 @@ section {
 }
 
 .hero-divider {
-  width: 220px;
+  width: 100%; /* Linia na całą szerokość */
   height: 1px;
-  background: var(--text);
-  margin-bottom: 0;
+  background-color: var(--border);
+  margin: 20px 0;
+  transform: scaleX(0);
+  transform-origin: center;
+  animation: revealLine 1.5s forwards 0.5s; /* Automatyczny start na wejściu */
+}
+
+@keyframes revealLine {
+  to {
+    transform: scaleX(1);
+  }
 }
 
 .hero-subtitle {
@@ -104,34 +208,73 @@ section {
   text-transform: uppercase;
   color: var(--text-light);
   text-align: right;
-  margin-bottom: 60px;
+  margin-bottom: 40px;
 }
 
+/* ─── INTRO (SFORMATOWANE JAK O MNIE) ─── */
+.hero-intro {
+  max-width: 800px; /* Nieco węższe, żeby lepiej wyglądało w wyśrodkowaniu */
+  margin: 60px auto 100px auto;
+  padding: 0 20px;
+  text-align: center; /* Wyśrodkowanie treści */
+}
+
+.hero-intro p {
+  font-size: 14px; /* Tak jak w .o-mnie-content p */
+  line-height: 1.8; /* Tak jak w .o-mnie-content p */
+  margin-bottom: 20px; /* Tak jak w .o-mnie-content p */
+  color: var(--text); /* Standardowy kolor tekstu */
+  font-family: var(--font-body);
+  letter-spacing: normal; /* Reset dużego rozstrzelenia liter */
+  text-transform: none; /* Powrót do małych liter */
+}
+
+.hero-intro p b {
+  font-weight: 600; /* Podkreślenie ważnych słów */
+}
+
+.hero-intro p:last-child {
+  margin-bottom: 0;
+}
+
+/* ─── INTRO (W RAMCE) ─── */
+/* .hero-intro {
+  max-width: 1200px;
+  margin: 60px auto 100px auto;
+  padding: 50px 40px;
+  text-align: center;
+  border: 1px solid var(--border);
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-light);
+  line-height: 2.2;
+}
+
+.hero-intro p {
+  margin-bottom: 25px;
+}
+
+.hero-intro p:last-child {
+  margin-bottom: 0;
+} */
+
+/* ─── O MNIE (SIATKA ZE ZDJĘCIEM) ─── */
 .hero-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 80px;
   align-items: start;
+  scroll-margin-top: 100px; /* Dla lepszego przewijania z menu */
 }
 
 .hero-photo {
   width: 100%;
   aspect-ratio: 3/4;
   object-fit: cover;
-  object-position: center center;
   display: block;
-}
-
-.hero-photo-placeholder {
-  width: 100%;
-  aspect-ratio: 3/4;
-  background: linear-gradient(135deg, #d8d5d0 0%, #c8c4be 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #999;
-  font-size: 13px;
-  letter-spacing: 0.1em;
 }
 
 .o-mnie-content h2 {
@@ -144,19 +287,17 @@ section {
 }
 
 .o-mnie-content p {
-  color: var(--text);
   font-size: 14px;
   line-height: 1.8;
   margin-bottom: 20px;
 }
 
-/* ─── SECTION HEADINGS z animowaną linią ─── */
+/* ─── SECTION HEADINGS (ANIMOWANE) ─── */
 .section-heading {
   display: flex;
   align-items: center;
   gap: 40px;
   margin-bottom: 50px;
-  overflow: hidden; /* clip the line during animation */
 }
 
 .section-heading h2 {
@@ -167,10 +308,11 @@ section {
   text-transform: uppercase;
   white-space: nowrap;
   flex-shrink: 0;
-  /* fade-in from left */
   opacity: 0;
   transform: translateX(-20px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s ease;
 }
 
 .section-heading h2 strong {
@@ -181,13 +323,12 @@ section {
   flex: 1;
   height: 1px;
   background: var(--border);
-  /* grow from zero width */
-  transform-origin: left center;
   transform: scaleX(0);
-  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: left;
+  transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* When section is in view, trigger animations */
+/* Stan po przewinięciu (klasa in-view dodawana przez JS) */
 .section-heading.in-view h2 {
   opacity: 1;
   transform: translateX(0);
@@ -195,35 +336,62 @@ section {
 
 .section-heading.in-view .section-heading-line {
   transform: scaleX(1);
+  transition-delay: 0.2s;
 }
 
-/* Slight delay for the line vs the heading */
-.section-heading.in-view h2 { transition-delay: 0s; }
-.section-heading.in-view .section-heading-line { transition-delay: 0.2s; }
+/* ─── OBSZARY POMOCY (LISTA Z KROPKAMI) ─── */
+.obszary-subheading {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin: 40px 0 20px 0;
+  color: var(--text-light);
+}
 
-/* ─── OBSZARY POMOCY ─── */
 .obszary-list {
   list-style: none;
-  padding: 0;
+  padding-left: 0;
+  margin-bottom: 50px;
 }
 
 .obszary-list li {
-  font-size: 14px;
-  line-height: 1.9;
-  color: var(--text);
-  padding-left: 16px;
   position: relative;
+  padding-left: 25px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  line-height: 1.6;
   opacity: 0;
-  transform: translateY(10px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
+  transform: translateX(-15px);
+  transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .obszary-list li.in-view {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateX(0);
 }
 
-/* ─── FORMY PRACY ─── */
+/* Fancy kropka */
+.obszary-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 5px;
+  height: 5px;
+  background-color: var(--border);
+  border-radius: 50%;
+  transform: scale(0);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.obszary-list li.in-view::before {
+  transform: scale(1);
+  transition-delay: 0.3s;
+}
+
+/* ─── FORMY PRACY (AKORDEON) ─── */
 .formy-grid {
   display: flex;
   flex-direction: column;
@@ -234,7 +402,9 @@ section {
   border-bottom: 1px solid var(--border);
   opacity: 0;
   transform: translateY(16px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s ease;
 }
 
 .forma-item.in-view {
@@ -259,20 +429,9 @@ section {
   align-items: center;
 }
 
-.forma-item h3 strong {
-  font-weight: 700;
-}
-
-.forma-title {
-  white-space: nowrap;
-}
-
 .toggle-icon {
   font-size: 18px;
-  font-weight: 300;
   transition: transform 0.3s;
-  flex-shrink: 0;
-  margin-left: 20px;
 }
 
 .forma-item h3.open .toggle-icon {
@@ -283,13 +442,25 @@ section {
   max-width: 560px;
 }
 
-.forma-body p {
-  font-size: 14px;
-  line-height: 1.8;
-  color: var(--text);
-  margin-bottom: 14px;
+/* ─── ANIMACJA ROZWIJANIA TREŚCI ─── */
+.extra-content {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.4s ease,
+    margin-top 0.4s ease;
+  margin-top: 0;
 }
 
+.extra-content.open {
+  max-height: 500px; /* Wartość większa niż spodziewany tekst */
+  opacity: 1;
+  margin-top: 12px;
+}
+
+/* Stylizowany przycisk "więcej" */
 .wiecej {
   display: inline-block;
   font-size: 12px;
@@ -299,17 +470,30 @@ section {
   background: none;
   font-family: var(--font-body);
   letter-spacing: 0.06em;
-  padding: 0;
+  padding: 5px 0;
   margin-top: 4px;
+  position: relative;
+  transition: color 0.3s ease;
 }
 
-.extra-content {
-  display: none;
-  margin-top: 12px;
+.wiecej:hover {
+  color: var(--text);
 }
 
-.extra-content.open {
-  display: block;
+/* Subtelna linia pod "więcej" pojawiająca się przy hoverze */
+.wiecej::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 1px;
+  bottom: 0;
+  left: 0;
+  background-color: var(--text);
+  transition: width 0.3s ease;
+}
+
+.wiecej:hover::after {
+  width: 100%;
 }
 
 /* ─── ZASADY WSPÓŁPRACY ─── */
@@ -322,7 +506,12 @@ section {
 .zasada-item {
   opacity: 0;
   transform: translateY(14px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s ease;
+}
+.zasada-item b{
+  font-weight: 600;
 }
 
 .zasada-item.in-view {
@@ -339,31 +528,11 @@ section {
   margin-bottom: 12px;
 }
 
-.zasada-item p {
-  font-size: 14px;
-  line-height: 1.8;
-  color: var(--text);
-}
-
 /* ─── KONTAKT ─── */
 .kontakt-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 80px;
-  align-items: start;
-}
-
-.kontakt-info p {
-  font-size: 14px;
-  line-height: 1.9;
-  color: var(--text);
-  margin-bottom: 8px;
-}
-
-.kontakt-info a {
-  color: var(--text);
-  text-decoration: underline;
-  text-underline-offset: 3px;
 }
 
 .kontakt-info .label {
@@ -375,10 +544,6 @@ section {
   margin-top: 28px;
   margin-bottom: 6px;
   color: var(--text-light);
-}
-
-.kontakt-info .label:first-child {
-  margin-top: 0;
 }
 
 .kontakt-form {
@@ -394,18 +559,8 @@ section {
   border-bottom: 1px solid var(--border);
   padding: 10px 0;
   font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 300;
-  color: var(--text);
   outline: none;
-  width: 100%;
   transition: border-color 0.2s;
-}
-
-.kontakt-form input::placeholder,
-.kontakt-form textarea::placeholder {
-  color: #aaa;
-  letter-spacing: 0.04em;
 }
 
 .kontakt-form input:focus,
@@ -413,14 +568,7 @@ section {
   border-color: var(--text);
 }
 
-.kontakt-form textarea {
-  resize: none;
-  height: 100px;
-}
-
 .kontakt-form button {
-  align-self: flex-start;
-  margin-top: 10px;
   padding: 12px 40px;
   background: transparent;
   border: 1px solid var(--text);
@@ -429,9 +577,8 @@ section {
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--text);
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  transition: all 0.2s;
 }
 
 .kontakt-form button:hover {
@@ -439,20 +586,13 @@ section {
   color: var(--bg);
 }
 
-#form-status {
-  font-size: 13px;
-  margin-top: 8px;
-  display: none;
-}
-
-/* ─── MAPA ─── */
+/* ─── MAPA, FOOTER, BACK TO TOP ─── */
 .mapa-wrapper {
   margin-top: 60px;
   border: 1px solid var(--border);
   overflow: hidden;
 }
 
-/* ─── FOOTER ─── */
 footer {
   text-align: center;
   padding: 30px 40px;
@@ -463,7 +603,6 @@ footer {
   text-transform: uppercase;
 }
 
-/* ─── BACK TO TOP ─── */
 .back-top {
   position: fixed;
   bottom: 30px;
@@ -475,12 +614,10 @@ footer {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
-  cursor: pointer;
   opacity: 0;
   transition: opacity 0.3s;
   z-index: 200;
-  user-select: none;
+  cursor: pointer;
 }
 
 .back-top.visible {
@@ -492,23 +629,34 @@ footer {
   section {
     padding: 60px 40px;
   }
-
   .hero-grid,
-  .kontakt-grid {
+  .kontakt-grid,
+  .zasady-grid {
     grid-template-columns: 1fr;
     gap: 40px;
   }
+  nav {
+    padding: 16px 20px;
+  }
+}
 
-  .zasady-grid {
-    grid-template-columns: 1fr;
-    gap: 30px;
+/* ─── DOPASOWANIE HERO-INTRO NA MOBILE ─── */
+
+@media (max-width: 900px) {
+  .hero-intro {
+    text-align: left; /* Wyrównanie do prawej jak w 'O mnie' */
+    margin: 40px 0; /* Mniejszy margines na mobile */
+    padding: 0; /* Reset paddingu, by tekst dotykał krawędzi sekcji jeśli trzeba */
   }
 
-  nav {
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    gap: 8px;
-    padding: 16px 20px;
+  .hero-intro p {
+    font-size: 14px; /* Subtelne zmniejszenie fontu na mniejszych ekranach */
+  }
+}
+
+@media (max-width: 600px) {
+  .hero-subtitle {
+    text-align: left;
   }
 }
 
@@ -516,17 +664,32 @@ footer {
   section {
     padding: 50px 20px;
   }
-
   .hero-name {
     font-size: 28px;
   }
-
   nav a {
     font-size: 10px;
     padding: 10px 14px;
   }
+}
 
-  .forma-title {
-    white-space: normal;
+/* ─── DOPASOWANIE GŁÓWNYCH NAGŁÓWKÓW (SECTION-HEADING) NA MOBILE ─── */
+
+@media (max-width: 900px) {
+  .section-heading h2 {
+    font-size: 22px; /* Zmniejszenie z 28px */
+    gap: 20px; /* Mniejszy odstęp między tekstem a linią */
+  }
+}
+
+@media (max-width: 600px) {
+  .section-heading {
+    gap: 15px; /* Jeszcze ciaśniejszy odstęp */
+    margin-bottom: 30px; /* Mniejszy margines pod nagłówkiem */
+  }
+
+  .section-heading h2 {
+    font-size: 18px; /* Optymalna wielkość na mały ekran */
+    letter-spacing: 0.05em;
   }
 }
